@@ -201,5 +201,8 @@ a = [
 1535
 ]
 
-ans = [(x * y) for x in a for y in a if x + y == 2020]
-print(ans.pop())
+ans1 = [(x * y) for x in a for y in a if x + y == 2020]
+print(ans1.pop())
+
+ans2 = [(x * y * z) for x in a for y in a for z in a if x + y + z == 2020]
+print(ans2.pop())
