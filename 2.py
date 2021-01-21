@@ -2,8 +2,6 @@ from collections import Counter
 
 with open('2.txt', encoding = 'utf-8') as f:
     lines = f.readlines()
-    c = Counter()
-
     ans1 = 0
     ans2 = 0
 
