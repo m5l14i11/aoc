@@ -31,8 +31,7 @@ def second_solution(data):
 
 
 with open('2.txt') as f:
-    data = [x.strip() for x in f.readlines()]
-    data = [tuple(i.split(' ')) for i in data]
+    data = [tuple(x.strip().split(' ')) for x in f.readlines()]
     ans1 = first_solution(data)
     print(ans1)
     ans2 = second_solution(data)
