@@ -22,7 +22,7 @@ pub fn solution_1(input: &str) -> usize {
 
             let common_char = a.intersection(&b).next().unwrap();
 
-            scores.get(common_char).unwrap()
+            scores.get(&common_char).unwrap()
         })
         .sum()
 }
