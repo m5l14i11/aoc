@@ -1,17 +1,13 @@
 use std::cmp::{max, min};
 
 fn get_coords(line: &str) -> Vec<Vec<usize>> {
-    let d = line.split(',').collect::<Vec<_>>();
-    let x0y0 = d[0]
-        .split('-')
-        .map(|val| val.parse::<usize>().unwrap())
-        .collect::<Vec<_>>();
-    let x1y1 = d[1]
-        .split('-')
-        .map(|val| val.parse::<usize>().unwrap())
-        .collect::<Vec<_>>();
-
-    vec![x0y0, x1y1]
+    line.split(',')
+        .map(|d| {
+            d.split('-')
+                .map(|val| val.parse::<usize>().unwrap())
+                .collect::<Vec<_>>()
+        })
+        .collect()
 }
 
 pub fn solution_1(input: &str) -> usize {
@@ -19,7 +15,7 @@ pub fn solution_1(input: &str) -> usize {
         .split('\n')
         .map(|line| {
             let coords = get_coords(line);
-
+            
             let x0y0 = &coords[0];
             let x1y1 = &coords[1];
 
