@@ -37,7 +37,7 @@ pub fn solution_1(input: &str) -> usize {
             get_adj_coords()
                 .iter()
                 .map(|&(dx, dy, dz)| IVec3::new(x + dx, y + dy, z + dz))
-                .filter(|x| cubes.get(x).is_none())
+                .filter(|pos| !cubes.contains(pos))
                 .count()
         })
         .sum::<usize>()
@@ -50,42 +50,28 @@ fn exposed(pos: IVec3, min_max: (i32, i32), cubes: &HashSet<IVec3>) -> bool {
 
     stack.push(pos);
 
-    let mut seen: HashSet<IVec3> = HashSet::new();
+    let mut seen = HashSet::new();
 
-    if cubes.get(&pos).is_some() {
+    if cubes.contains(&pos) {
         return false;
     }
 
-    while stack.len() > 0 {
-        let pop = stack.pop().unwrap();
+    while let Some(pop) = stack.pop() {
+        if !cubes.contains(&pop) {
+            for coords in pop.to_array() {
+                if !(min_coords <= coords && coords <= max_coords) {
+                    return true;
+                }
+            }
 
-        if cubes.get(&pop).is_some() {
-            continue;
+            if !seen.contains(&pop) {
+                seen.insert(pop);
+
+                for &(dx, dy, dz) in get_adj_coords().iter() {
+                    stack.push(IVec3::new(pop.x + dx, pop.y + dy, pop.z + dz))
+                }
+            }
         }
-
-        let IVec3 { x, y, z } = pop;
-
-        if !(min_coords <= x && x <= max_coords) {
-            return true;
-        }
-
-        if !(min_coords <= y && y <= max_coords) {
-            return true;
-        }
-
-        if !(min_coords <= z && z <= max_coords) {
-            return true;
-        }
-
-        if seen.get(&pop).is_some() {
-            continue;
-        }
-
-        seen.insert(pop);
-
-        get_adj_coords()
-            .iter()
-            .for_each(|&(dx, dy, dz)| stack.push(IVec3::new(pop.x + dx, pop.y + dy, pop.z + dz)));
     }
 
     false
