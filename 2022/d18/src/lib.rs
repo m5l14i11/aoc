@@ -43,16 +43,16 @@ pub fn solution_1(input: &str) -> usize {
         .sum::<usize>()
 }
 
-fn exposed(pos: &IVec3, cubes: &HashSet<IVec3>, min_max: (i32, i32)) -> bool {
+fn exposed(pos: IVec3, min_max: (i32, i32), cubes: &HashSet<IVec3>) -> bool {
     let (min_coords, max_coords) = min_max;
 
     let mut stack = Vec::new();
 
-    stack.push(pos.clone());
+    stack.push(pos);
 
     let mut seen: HashSet<IVec3> = HashSet::new();
 
-    if cubes.get(pos).is_some() {
+    if cubes.get(&pos).is_some() {
         return false;
     }
 
@@ -108,7 +108,7 @@ pub fn solution_2(input: &str) -> usize {
             get_adj_coords()
                 .iter()
                 .map(|&(dx, dy, dz)| IVec3::new(x + dx, y + dy, z + dz))
-                .filter(|pos| exposed(pos, &cubes, (min_coords, max_coords)))
+                .filter(|pos| exposed(*pos, (min_coords, max_coords), &cubes))
                 .count()
         })
         .sum::<usize>()
