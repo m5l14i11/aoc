@@ -126,14 +126,15 @@ pub fn solution_1(input: &str) -> i32 {
     let mut c: i32 = 0;
 
     for instruction in instructions {
-        for cycle in cycles {
-            if c + 1 == cycle {
-                scores.insert(c + 1, (c + 1) * x);
-            }
+        let noop = c + 1;
+        let addx = c + 2;
 
-            if c + 2 == cycle {
-                scores.insert(c + 2, (c + 2) * x);
-            }
+        if cycles.contains(&noop) {
+            scores.entry(noop).or_insert(noop * x);
+        }
+
+        if cycles.contains(&addx) {
+            scores.entry(addx).or_insert(addx * x);
         }
 
         c += instruction.cycles();
