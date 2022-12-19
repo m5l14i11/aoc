@@ -25,9 +25,7 @@ fn parse_trees(input: &str) -> Vec<Vec<u32>> {
 pub fn solution_1(input: &str) -> usize {
     let trees: Vec<Vec<u32>> = parse_trees(input);
     let row = trees.len();
-    let col =  trees[0].len();
-    let max_length = row - 1;
-    let line_max_length = col - 1;
+    let col = trees[0].len();
 
     let mut visible_trees: Vec<Vec<bool>> = trees
         .iter()
@@ -37,13 +35,13 @@ pub fn solution_1(input: &str) -> usize {
                 .iter()
                 .enumerate()
                 .map(|(line_i, _)| {
-                    i == 0 || i == max_length || line_i == 0 || line_i == line_max_length
+                    i == 0 || i == row - 1 || line_i == 0 || line_i == col - 1
                 })
                 .collect()
         })
         .collect();
 
-    for y in 0..max_length {
+    for y in 0..row {
         let mut current_tree_size = 0;
         for x in 0..col {
             if x == 0 {
@@ -54,10 +52,10 @@ pub fn solution_1(input: &str) -> usize {
             }
         }
     }
-    for y in (0..max_length).rev() {
+    for y in (0..row).rev() {
         let mut current_tree_size = 0;
         for x in (0..col).rev() {
-            if x == line_max_length {
+            if x == col - 1 {
                 current_tree_size = trees[y][x] as usize;
             } else if trees[y][x] > current_tree_size as u32 {
                 current_tree_size = trees[y][x] as usize;
@@ -66,7 +64,7 @@ pub fn solution_1(input: &str) -> usize {
         }
     }
 
-    for x in 0..max_length {
+    for x in 0..row {
         let mut current_tree_size = 0;
         for y in 0..col {
             if y == 0 {
@@ -77,10 +75,10 @@ pub fn solution_1(input: &str) -> usize {
             }
         }
     }
-    for x in (0..max_length).rev() {
+    for x in (0..row).rev() {
         let mut current_tree_size = 0;
         for y in (0..col).rev() {
-            if y == line_max_length {
+            if y == col - 1 {
                 current_tree_size = trees[y][x] as usize;
             } else if trees[y][x] > current_tree_size as u32 {
                 current_tree_size = trees[y][x] as usize;
