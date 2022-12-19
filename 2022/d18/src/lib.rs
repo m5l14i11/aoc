@@ -4,14 +4,14 @@ use std::{
     collections::HashSet,
 };
 
-fn get_adj_coords() -> Vec<(i32, i32, i32)> {
+fn get_adjacent_coords() -> Vec<IVec3> {
     vec![
-        (0, 0, 1),
-        (0, 1, 0),
-        (1, 0, 0),
-        (0, 0, -1),
-        (0, -1, 0),
-        (-1, 0, 0),
+        IVec3::new(0, 0, 1),
+        IVec3::new(0, 1, 0),
+        IVec3::new(1, 0, 0),
+        IVec3::new(0, 0, -1),
+        IVec3::new(0, -1, 0),
+        IVec3::new(-1, 0, 0),
     ]
 }
 
@@ -33,10 +33,10 @@ pub fn solution_1(input: &str) -> usize {
 
     cubes
         .iter()
-        .map(|&IVec3 { x, y, z }| {
-            get_adj_coords()
+        .map(|pos| {
+            get_adjacent_coords()
                 .iter()
-                .map(|&(dx, dy, dz)| IVec3::new(x + dx, y + dy, z + dz))
+                .map(|offset| *pos + *offset)
                 .filter(|pos| !cubes.contains(pos))
                 .count()
         })
@@ -67,8 +67,8 @@ fn exposed(pos: IVec3, min_max: (i32, i32), cubes: &HashSet<IVec3>) -> bool {
             if !seen.contains(&pop) {
                 seen.insert(pop);
 
-                for &(dx, dy, dz) in get_adj_coords().iter() {
-                    stack.push(IVec3::new(pop.x + dx, pop.y + dy, pop.z + dz))
+                for offset in get_adjacent_coords().iter() {
+                    stack.push(pop + *offset)
                 }
             }
         }
@@ -90,12 +90,43 @@ pub fn solution_2(input: &str) -> usize {
 
     cubes
         .iter()
-        .map(|&IVec3 { x, y, z }| {
-            get_adj_coords()
+        .map(|pos| {
+            get_adjacent_coords()
                 .iter()
-                .map(|&(dx, dy, dz)| IVec3::new(x + dx, y + dy, z + dz))
+                .map(|offset| *pos + *offset)
                 .filter(|pos| exposed(*pos, (min_coords, max_coords), &cubes))
                 .count()
         })
         .sum::<usize>()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_DATA: &str = "2,2,2
+1,2,2
+3,2,2
+2,1,2
+2,3,2
+2,2,1
+2,2,3
+2,2,4
+2,2,6
+1,2,5
+3,2,5
+2,1,5
+2,3,5";
+
+    #[test]
+    fn solution_1_test() {
+        let result = solution_1(TEST_DATA.trim());
+        assert_eq!(result, 64);
+    }
+
+    #[test]
+    fn solution_2_test() {
+        let result = solution_2(TEST_DATA.trim());
+        assert_eq!(result, 58);
+    }
 }
