@@ -15,7 +15,7 @@ fn get_adjacent_coords() -> Vec<IVec3> {
     ]
 }
 
-fn get_cubes(input: &str) -> HashSet<IVec3> {
+fn parse_cubes(input: &str) -> HashSet<IVec3> {
     input
         .lines()
         .map(|line| {
@@ -25,11 +25,11 @@ fn get_cubes(input: &str) -> HashSet<IVec3> {
                 .collect::<Vec<_>>();
             IVec3::new(vec[0], vec[1], vec[2])
         })
-        .collect::<HashSet<IVec3>>()
+        .collect()
 }
 
 pub fn solution_1(input: &str) -> usize {
-    let cubes = get_cubes(input);
+    let cubes = parse_cubes(input);
 
     cubes
         .iter()
@@ -40,7 +40,7 @@ pub fn solution_1(input: &str) -> usize {
                 .filter(|pos| !cubes.contains(pos))
                 .count()
         })
-        .sum::<usize>()
+        .sum()
 }
 
 fn exposed(pos: IVec3, min_max: (i32, i32), cubes: &HashSet<IVec3>) -> bool {
@@ -81,7 +81,7 @@ pub fn solution_2(input: &str) -> usize {
     let mut min_coords = i32::MAX;
     let mut max_coords = i32::MIN;
 
-    let cubes = get_cubes(input);
+    let cubes = parse_cubes(input);
 
     cubes.iter().for_each(|vec| {
         min_coords = min(min_coords, vec.min_element());
@@ -97,7 +97,7 @@ pub fn solution_2(input: &str) -> usize {
                 .filter(|pos| exposed(*pos, (min_coords, max_coords), &cubes))
                 .count()
         })
-        .sum::<usize>()
+        .sum()
 }
 
 #[cfg(test)]
