@@ -28,6 +28,36 @@ fn parse_cubes(input: &str) -> HashSet<IVec3> {
         .collect()
 }
 
+fn is_exposed(pos: IVec3, min_max: (i32, i32), cubes: &HashSet<IVec3>) -> bool {
+    let (min_coords, max_coords) = min_max;
+    let mut stack = Vec::new();
+    let mut seen = HashSet::new();
+
+    stack.push(pos);
+
+    while let Some(pop) = stack.pop() {
+        if cubes.contains(&pop) {
+            continue;
+        }
+
+        for coords in pop.to_array() {
+            if !(min_coords <= coords && coords <= max_coords) {
+                return true;
+            }
+        }
+
+        if !seen.contains(&pop) {
+            seen.insert(pop);
+
+            for offset in get_adjacent_coords().iter() {
+                stack.push(pop + *offset)
+            }
+        }
+    }
+
+    false
+}
+
 pub fn solution_1(input: &str) -> usize {
     let cubes = parse_cubes(input);
 
@@ -41,40 +71,6 @@ pub fn solution_1(input: &str) -> usize {
                 .count()
         })
         .sum()
-}
-
-fn exposed(pos: IVec3, min_max: (i32, i32), cubes: &HashSet<IVec3>) -> bool {
-    let (min_coords, max_coords) = min_max;
-
-    let mut stack = Vec::new();
-
-    stack.push(pos);
-
-    let mut seen = HashSet::new();
-
-    if cubes.contains(&pos) {
-        return false;
-    }
-
-    while let Some(pop) = stack.pop() {
-        if !cubes.contains(&pop) {
-            for coords in pop.to_array() {
-                if !(min_coords <= coords && coords <= max_coords) {
-                    return true;
-                }
-            }
-
-            if !seen.contains(&pop) {
-                seen.insert(pop);
-
-                for offset in get_adjacent_coords().iter() {
-                    stack.push(pop + *offset)
-                }
-            }
-        }
-    }
-
-    false
 }
 
 pub fn solution_2(input: &str) -> usize {
@@ -94,7 +90,7 @@ pub fn solution_2(input: &str) -> usize {
             get_adjacent_coords()
                 .iter()
                 .map(|offset| *pos + *offset)
-                .filter(|pos| exposed(*pos, (min_coords, max_coords), &cubes))
+                .filter(|pos| is_exposed(*pos, (min_coords, max_coords), &cubes))
                 .count()
         })
         .sum()
