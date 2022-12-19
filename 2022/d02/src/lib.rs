@@ -42,7 +42,7 @@ pub fn solution_1(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let hands: Vec<&str> = line.split(" ").collect();
+            let hands = line.split(" ").collect::<Vec<&str>>();
 
             let hand1 = hands[0].parse::<Hand>().unwrap();
             let hand2 = hands[1].parse::<Hand>().unwrap();
