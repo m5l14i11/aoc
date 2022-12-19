@@ -66,24 +66,18 @@ pub fn solution_2(input: &str) -> usize {
             let hand1 = hands[0].parse::<Hand>().unwrap();
             let hand2 = hands[1];
 
-            let score = match hand2 {
-                "Y" => 3,
-                "Z" => 6,
-                _ => 0,
-            };
-
-            let our_hand = match hand2 {
-                "X" => match hand1 {
+            let (score, our_hand) = match hand2 {
+                "X" => (0, match hand1 {
                     Hand::Rock => Hand::Scissors,
                     Hand::Paper => Hand::Rock,
                     Hand::Scissors => Hand::Paper,
-                },
-                "Y" => hand1,
-                "Z" => match hand1 {
+                }),
+                "Y" => (3, hand1),
+                "Z" => (6, match hand1 {
                     Hand::Rock => Hand::Paper,
                     Hand::Paper => Hand::Scissors,
                     Hand::Scissors => Hand::Rock,
-                },
+                }),
                 _ => return 0,
             };
 
