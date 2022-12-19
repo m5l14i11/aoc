@@ -1,13 +1,13 @@
 #![feature(iter_array_chunks)]
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{HashMap, BTreeSet};
 
-fn get_scores() -> BTreeMap<char, usize> {
-    ('a'..='z')
-        .chain('A'..='Z')
+fn get_scores() -> HashMap<char, usize> {
+    (b'a'..=b'z')
+        .chain(b'A'..=b'Z')
         .enumerate()
-        .map(|(idx, c)| (c, idx + 1))
-        .collect::<BTreeMap<char, usize>>()
+        .map(|(idx, c)| (c as char, idx + 1))
+        .collect()
 }
 
 pub fn solution_1(input: &str) -> usize {
@@ -16,13 +16,13 @@ pub fn solution_1(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let len = line.len();
-            let a = &line[0..len / 2].chars().collect::<BTreeSet<_>>();
-            let b = &line[len / 2..len].chars().collect();
+            let (a, b) = line.split_at(line.len() / 2);
+            let a = a.chars().collect::<BTreeSet<char>>();
+            let b = b.chars().collect::<BTreeSet<char>>();
 
-            let common_char = a.intersection(&b).next().unwrap();
+            let common_char = a.intersection(&b).min().unwrap();
 
-            scores.get(&common_char).unwrap()
+            *scores.get(common_char).unwrap_or(&0)
         })
         .sum()
 }
@@ -34,15 +34,42 @@ pub fn solution_2(input: &str) -> usize {
         .lines()
         .array_chunks::<3>()
         .map(|[a, b, c]| {
-            let a_set = a.chars().collect::<BTreeSet<_>>();
-            let b_set = b.chars().collect();
-            let c_set = c.chars().collect();
+            let a_chars = a.chars().collect::<Vec<char>>();
+            let b_chars = b.chars().collect::<Vec<char>>();
+            let c_chars = c.chars().collect::<Vec<char>>();
 
-            let a_and_b = a_set.intersection(&b_set).cloned().collect::<BTreeSet<_>>();
+            let common_char = a_chars
+                .iter()
+                .filter(|&c| b_chars.contains(c))
+                .filter(|&c| c_chars.contains(c))
+                .min_by_key(|c| *scores.get(c).unwrap_or(&0))
+                .unwrap_or(&'\0');
 
-            let common_char = a_and_b.intersection(&c_set).next().unwrap();
-
-            scores.get(&common_char).unwrap()
+            *scores.get(common_char).unwrap_or(&0)
         })
         .sum()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_DATA: &str = "vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw";
+
+    #[test]
+    fn solution_1_test() {
+        let result = solution_1(TEST_DATA.trim());
+        assert_eq!(result, 157);
+    }
+
+    #[test]
+    fn solution_2_test() {
+        let result = solution_2(TEST_DATA.trim());
+        assert_eq!(result, 70);
+    }
 }
