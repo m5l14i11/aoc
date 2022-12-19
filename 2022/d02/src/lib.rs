@@ -23,15 +23,12 @@ impl FromStr for Hand {
 
 impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self == &Hand::Scissors && other == &Hand::Rock {
-            Some(Ordering::Less);
+        use Hand::*;
+        match (self, other) {
+            (Rock, Scissors) => Some(Ordering::Greater),
+            (Scissors, Rock) => Some(Ordering::Less),
+            _ => Some((*self as usize).cmp(&(*other as usize)))
         }
-
-        if self == &Hand::Rock && other == &Hand::Scissors {
-            Some(Ordering::Greater);
-        }
-
-        Some((*self as usize).cmp(&(*other as usize)))
     }
 }
 
@@ -45,13 +42,10 @@ pub fn solution_1(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let hands = line
-                .split(" ")
-                .map(|item| item.parse::<Hand>().unwrap())
-                .collect::<Vec<Hand>>();
+            let hands: Vec<&str> = line.split(" ").collect();
 
-            let hand1 = hands[0];
-            let hand2 = hands[1];
+            let hand1 = hands[0].parse::<Hand>().unwrap();
+            let hand2 = hands[1].parse::<Hand>().unwrap();
 
             match hand1.partial_cmp(&hand2) {
                 Some(Ordering::Equal) => hand2.score(3),
@@ -60,7 +54,7 @@ pub fn solution_1(input: &str) -> usize {
                 None => 0,
             }
         })
-        .sum::<usize>()
+        .sum()
 }
 
 pub fn solution_2(input: &str) -> usize {
@@ -69,29 +63,52 @@ pub fn solution_2(input: &str) -> usize {
         .map(|line| {
             let hands = line.split(" ").collect::<Vec<&str>>();
 
-            let hand1 = hands.first().unwrap().parse::<Hand>().unwrap();
+            let hand1 = hands[0].parse::<Hand>().unwrap();
             let hand2 = hands[1];
 
-            match hand2 {
-                "X" => {
-                    let our_hand = match hand1 {
-                        Hand::Rock => Hand::Scissors,
-                        Hand::Paper => Hand::Rock,
-                        Hand::Scissors => Hand::Paper,
-                    };
-                    our_hand.score(0)
-                }
-                "Y" => hand1.score(3),
-                "Z" => {
-                    let our_hand = match hand1 {
-                        Hand::Rock => Hand::Paper,
-                        Hand::Paper => Hand::Scissors,
-                        Hand::Scissors => Hand::Rock,
-                    };
-                    our_hand.score(6)
-                }
+            let score = match hand2 {
+                "Y" => 3,
+                "Z" => 6,
                 _ => 0,
-            }
+            };
+
+            let our_hand = match hand2 {
+                "X" => match hand1 {
+                    Hand::Rock => Hand::Scissors,
+                    Hand::Paper => Hand::Rock,
+                    Hand::Scissors => Hand::Paper,
+                },
+                "Y" => hand1,
+                "Z" => match hand1 {
+                    Hand::Rock => Hand::Paper,
+                    Hand::Paper => Hand::Scissors,
+                    Hand::Scissors => Hand::Rock,
+                },
+                _ => return 0,
+            };
+
+            our_hand.score(score)
         })
-        .sum::<usize>()
+        .sum()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_DATA: &str = "A Y
+B X
+C Z";
+
+    #[test]
+    fn solution_1_test() {
+        let result = solution_1(TEST_DATA.trim());
+        assert_eq!(result, 15);
+    }
+
+    #[test]
+    fn solution_2_test() {
+        let result = solution_2(TEST_DATA.trim());
+        assert_eq!(result, 12);
+    }
 }
