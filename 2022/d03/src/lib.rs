@@ -34,9 +34,9 @@ pub fn solution_2(input: &str) -> usize {
         .lines()
         .array_chunks::<3>()
         .map(|[a, b, c]| {
-            let a_chars = a.chars().collect::<Vec<char>>();
-            let b_chars = b.chars().collect::<Vec<char>>();
-            let c_chars = c.chars().collect::<Vec<char>>();
+            let a_chars = a.chars().collect::<BTreeSet<char>>();
+            let b_chars = b.chars().collect::<BTreeSet<char>>();
+            let c_chars = c.chars().collect::<BTreeSet<char>>();
 
             let common_char = a_chars
                 .iter()
