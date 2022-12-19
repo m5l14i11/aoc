@@ -23,14 +23,16 @@ fn parse_trees(input: &str) -> Vec<Vec<u32>> {
 }
 
 pub fn solution_1(input: &str) -> usize {
-    let trees = parse_trees(input);
-    let max_length = trees.len() - 1;
+    let trees: Vec<Vec<u32>> = parse_trees(input);
+    let row = trees.len();
+    let col =  trees[0].len();
+    let max_length = row - 1;
+    let line_max_length = col - 1;
 
     let mut visible_trees: Vec<Vec<bool>> = trees
         .iter()
         .enumerate()
         .map(|(i, tree_line)| {
-            let line_max_length = tree_line.len() - 1;
             tree_line
                 .iter()
                 .enumerate()
@@ -41,9 +43,9 @@ pub fn solution_1(input: &str) -> usize {
         })
         .collect();
 
-    for y in 0..trees.len() {
+    for y in 0..max_length {
         let mut current_tree_size = 0;
-        for x in 0..trees[0].len() {
+        for x in 0..col {
             if x == 0 {
                 current_tree_size = trees[y][x] as usize;
             } else if trees[y][x] > current_tree_size as u32 {
@@ -52,10 +54,10 @@ pub fn solution_1(input: &str) -> usize {
             }
         }
     }
-    for y in (0..trees.len()).rev() {
+    for y in (0..max_length).rev() {
         let mut current_tree_size = 0;
-        for x in (0..trees[0].len()).rev() {
-            if x == trees[0].len() - 1 {
+        for x in (0..col).rev() {
+            if x == line_max_length {
                 current_tree_size = trees[y][x] as usize;
             } else if trees[y][x] > current_tree_size as u32 {
                 current_tree_size = trees[y][x] as usize;
@@ -64,9 +66,9 @@ pub fn solution_1(input: &str) -> usize {
         }
     }
 
-    for x in 0..trees.len() {
+    for x in 0..max_length {
         let mut current_tree_size = 0;
-        for y in 0..trees[0].len() {
+        for y in 0..col {
             if y == 0 {
                 current_tree_size = trees[y][x] as usize;
             } else if trees[y][x] > current_tree_size as u32 {
@@ -75,10 +77,10 @@ pub fn solution_1(input: &str) -> usize {
             }
         }
     }
-    for x in (0..trees.len()).rev() {
+    for x in (0..max_length).rev() {
         let mut current_tree_size = 0;
-        for y in (0..trees[0].len()).rev() {
-            if y == trees[0].len() - 1 {
+        for y in (0..col).rev() {
+            if y == line_max_length {
                 current_tree_size = trees[y][x] as usize;
             } else if trees[y][x] > current_tree_size as u32 {
                 current_tree_size = trees[y][x] as usize;
@@ -91,7 +93,7 @@ pub fn solution_1(input: &str) -> usize {
 }
 
 pub fn solution_2(input: &str) -> usize {
-    let trees = parse_trees(input);
+    let trees: Vec<Vec<u32>> = parse_trees(input);
 
     let mut high_score = 0;
 
