@@ -23,7 +23,7 @@ fn parse_cubes(input: &str) -> HashSet<IVec3> {
                 .split(",")
                 .map(|n| n.parse::<i32>().unwrap())
                 .collect::<Vec<_>>();
-            IVec3::new(vec[0], vec[1], vec[2])
+            IVec3::from_array(vec.try_into().unwrap())
         })
         .collect()
 }
