@@ -1,51 +1,67 @@
+use regex::Regex;
 use std::cmp::{max, min};
 
-fn get_coords(line: &str) -> Vec<Vec<usize>> {
-    line.split(',')
-        .map(|d| {
-            d.split('-')
-                .map(|val| val.parse::<usize>().unwrap())
-                .collect::<Vec<_>>()
-        })
-        .collect()
+fn parse_coordinates(line: &str) -> Option<(usize, usize, usize, usize)> {
+    let re = Regex::new(r"(\d+)-(\d+),(\d+)-(\d+)").unwrap();
+   
+    let captures = re.captures(line)?;
+    let x0 = captures[1].parse::<usize>().ok()?;
+    let y0 = captures[2].parse::<usize>().ok()?;
+    let x1 = captures[3].parse::<usize>().ok()?;
+    let y1 = captures[4].parse::<usize>().ok()?;
+
+    Some((x0, y0, x1, y1))
 }
 
 pub fn solution_1(input: &str) -> usize {
     input
-        .split('\n')
+        .lines()
         .map(|line| {
-            let coords = get_coords(line);
-            
-            let x0y0 = &coords[0];
-            let x1y1 = &coords[1];
+            let (x0, y0, x1, y1) = parse_coordinates(line).unwrap_or((0, 0, 0, 0));
 
-            if x0y0[0] >= x1y1[0] && x0y0[1] <= x1y1[1] {
-                return 1;
+            match (x0 >= x1, y0 <= y1) {
+                (true, true) | (false, false) => 1,
+                _ => 0,
             }
-
-            if x1y1[0] >= x0y0[0] && x1y1[1] <= x0y0[1] {
-                return 1;
-            }
-
-            0
         })
-        .sum::<usize>()
+        .sum()
 }
 
 pub fn solution_2(input: &str) -> usize {
     input
-        .split('\n')
+        .lines()
         .map(|line| {
-            let coords = get_coords(line);
+            let (x0, y0, x1, y1) = parse_coordinates(line).unwrap_or((0, 0, 0, 0));
 
-            let x0y0 = &coords[0];
-            let x1y1 = &coords[1];
-
-            if max(x0y0[0], x1y1[0]) <= min(x0y0[1], x1y1[1]) {
+            if max(x0, x1) <= min(y0, y1) {
                 return 1;
             }
 
             0
         })
-        .sum::<usize>()
+        .sum()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_DATA: &str = "2-4,6-8
+2-3,4-5
+5-7,7-9
+2-8,3-7
+6-6,4-6
+2-6,4-8";
+
+    #[test]
+    fn solution_1_test() {
+        let result = solution_1(TEST_DATA.trim());
+        assert_eq!(result, 2);
+    }
+
+    #[test]
+    fn solution_2_test() {
+        let result = solution_2(TEST_DATA.trim());
+        assert_eq!(result, 4);
+    }
 }
