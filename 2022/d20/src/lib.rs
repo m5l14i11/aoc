@@ -1,13 +1,15 @@
 fn parse_numbers(input: &str) -> Vec<(usize, i64)> {
-    input
-        .lines()
-        .enumerate()
-        .map(|(id, line)| (id, line.parse::<i64>().unwrap()))
-        .collect::<Vec<_>>()
+    input.lines().enumerate().fold(Vec::new(), |mut acc, (id, line)| {
+        match line.parse() {
+            Ok(value) => acc.push((id, value)),
+            Err(_) => (),
+        }
+        acc
+    })
 }
 
 pub fn solution_1(input: &str) -> i64 {
-    let numbers = parse_numbers(input);
+    let numbers: Vec<(usize, i64)> = parse_numbers(input);
     let mut state: Vec<(usize, i64)> = numbers.clone();
 
     for (id, _) in numbers {
